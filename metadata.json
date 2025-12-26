@@ -1,0 +1,7 @@
+{
+  "name": "Gestión Inmobiliaria Pro",
+  "description": "Una plataforma integral para la gestión y seguimiento de promociones inmobiliarias, con visualización de datos técnicos, financieros y asistencia inteligente basada en ubicación.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
