@@ -60,6 +60,12 @@ const mapSupabaseRowToProject = (row: any): Project => {
         typology: row['Tipología'],
         subtypology: row['Subtipología'],
         roofType: row['Tipo CUB.'],
+        floorsAboveGround: String(row['Nº Plantas SR'] || '-'),
+        surfaceAboveGround: String(row['Sup Const. SR'] || '-'),
+        floorsBelowGround: String(row['Nº Pl. BR'] || '-'),
+        surfaceBelowGround: String(row['Sup Const. BR'] || '-'),
+        totalFloors: String(row['Nº TOT Pl'] || '-'),
+        notes: row.Notas || '',
         coordinates: {
             lat: row.Latitud || 40.4168,
             lng: row.Longitud || -3.7038
@@ -68,6 +74,24 @@ const mapSupabaseRowToProject = (row: any): Project => {
         profileCount: null,
         grayscale: status === 'Concurso'
     };
+};
+
+/**
+ * Actualiza la columna 'Notas' de un proyecto en Supabase
+ * @param projectId El Cod (referencia) del proyecto
+ * @param notes El nuevo contenido de las notas
+ */
+export const updateProjectNotes = async (projectId: string, notes: string): Promise<{ success: boolean; message?: string }> => {
+    const { error } = await supabase
+        .from('projects')
+        .update({ Notas: notes })
+        .eq('Cod', projectId);
+
+    if (error) {
+        console.error(`Error updating notes for project ${projectId}:`, error.message, error);
+        return { success: false, message: error.message };
+    }
+    return { success: true };
 };
 
 // Obtiene todos los proyectos de la tabla 'projects' en Supabase

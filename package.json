@@ -12,12 +12,16 @@
     "@google/genai": "^1.34.0",
     "@supabase/supabase-js": "^2.45.0",
     "@tailwindcss/vite": "^4.1.18",
+    "html2pdf.js": "^0.12.1",
+    "lucide-react": "^0.562.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-router-dom": "^7.11.0",
+    "recharts": "^3.6.0",
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
+    "@types/html2pdf.js": "^0.10.0",
     "@types/node": "^22.14.0",
     "@vitejs/plugin-react": "^5.0.0",
     "typescript": "~5.8.2",

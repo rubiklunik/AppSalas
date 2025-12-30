@@ -11,7 +11,9 @@ const ListView: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [locationTerm, setLocationTerm] = useState('');
-  const [statusFilters, setStatusFilters] = useState<string[]>(['En proyecto', 'En Construcción', 'Completado', 'Concurso']);
+  const [statusFilter, setStatusFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
+  const [regimeFilter, setRegimeFilter] = useState('');
   const [floorsFilter, setFloorsFilter] = useState('');
   const [sizeFilter, setSizeFilter] = useState('');
   const [sortBy, setSortBy] = useState('recent');
@@ -27,6 +29,9 @@ const ListView: React.FC = () => {
     loadData();
   }, []);
 
+  const statusOptions = Array.from(new Set(projects.map(p => p.status))).filter(Boolean).sort();
+  const typeOptions = Array.from(new Set(projects.map(p => p.businessType))).filter(Boolean).sort();
+  const regimeOptions = Array.from(new Set(projects.map(p => p.regime))).filter(Boolean).sort();
   const floorOptions = Array.from(new Set(projects.map(p => p.floors))).filter((f): f is string => typeof f === 'string' && f !== '' && f !== '-').sort((a, b) => {
     // Intentar ordenar numéricamente si es posible
     const numA = parseInt(a);
@@ -42,10 +47,12 @@ const ListView: React.FC = () => {
     const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       String(p.ref).toLowerCase().includes(searchTerm.toLowerCase());
     const matchesLocation = p.location.toLowerCase().includes(locationTerm.toLowerCase());
-    const matchesStatus = statusFilters.length === 0 || statusFilters.includes(p.status);
+    const matchesStatus = statusFilter === '' || p.status === statusFilter;
+    const matchesType = typeFilter === '' || p.businessType === typeFilter;
+    const matchesRegime = regimeFilter === '' || p.regime === regimeFilter;
     const matchesFloors = floorsFilter === '' || p.floors === floorsFilter;
     const matchesSize = sizeFilter === '' || p.size === sizeFilter;
-    return matchesSearch && matchesLocation && matchesStatus && matchesFloors && matchesSize;
+    return matchesSearch && matchesLocation && matchesStatus && matchesType && matchesRegime && matchesFloors && matchesSize;
   }).sort((a, b) => {
     if (sortBy === 'name') {
       return a.name.localeCompare(b.name);
@@ -69,8 +76,15 @@ const ListView: React.FC = () => {
           setSearchTerm={setSearchTerm}
           locationTerm={locationTerm}
           setLocationTerm={setLocationTerm}
-          statusFilters={statusFilters}
-          setStatusFilters={setStatusFilters}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          statusOptions={statusOptions}
+          typeFilter={typeFilter}
+          setTypeFilter={setTypeFilter}
+          typeOptions={typeOptions}
+          regimeFilter={regimeFilter}
+          setRegimeFilter={setRegimeFilter}
+          regimeOptions={regimeOptions}
           floorsFilter={floorsFilter}
           setFloorsFilter={setFloorsFilter}
           floorOptions={floorOptions}

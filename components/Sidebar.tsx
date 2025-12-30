@@ -6,8 +6,15 @@ interface SidebarProps {
   setSearchTerm: (val: string) => void;
   locationTerm: string;
   setLocationTerm: (val: string) => void;
-  statusFilters: string[];
-  setStatusFilters: React.Dispatch<React.SetStateAction<string[]>>;
+  statusFilter: string;
+  setStatusFilter: (val: string) => void;
+  statusOptions: string[];
+  typeFilter: string;
+  setTypeFilter: (val: string) => void;
+  typeOptions: string[];
+  regimeFilter: string;
+  setRegimeFilter: (val: string) => void;
+  regimeOptions: string[];
   floorsFilter: string;
   setFloorsFilter: (val: string) => void;
   floorOptions: string[];
@@ -19,17 +26,17 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({
   searchTerm, setSearchTerm,
   locationTerm, setLocationTerm,
-  statusFilters, setStatusFilters,
+  statusFilter, setStatusFilter,
+  statusOptions,
+  typeFilter, setTypeFilter,
+  typeOptions,
+  regimeFilter, setRegimeFilter,
+  regimeOptions,
   floorsFilter, setFloorsFilter,
   floorOptions,
   sizeFilter, setSizeFilter,
   sizeOptions
 }) => {
-  const toggleStatus = (status: string) => {
-    setStatusFilters(prev =>
-      prev.includes(status) ? prev.filter(s => s !== status) : [...prev, status]
-    );
-  };
 
   return (
     <aside className="w-full md:w-80 lg:w-96 shrink-0 bg-white dark:bg-[#1a2632] border-r border-[#f0f2f4] dark:border-[#2a3b4d] md:h-[calc(100vh-64px)] md:sticky md:top-16 overflow-y-auto custom-scrollbar z-40">
@@ -43,7 +50,9 @@ const Sidebar: React.FC<SidebarProps> = ({
             onClick={() => {
               setSearchTerm('');
               setLocationTerm('');
-              setStatusFilters([]); // Todos deseleccionados
+              setStatusFilter('');
+              setTypeFilter('');
+              setRegimeFilter('');
               setFloorsFilter('');
               setSizeFilter('');
             }}
@@ -83,21 +92,46 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         <hr className="border-[#f0f2f4] dark:border-[#2a3b4d]" />
 
-        <div className="space-y-3">
+        <div className="space-y-2">
           <label className="text-sm font-medium text-[#111418] dark:text-white block">Estado del proyecto</label>
-          <div className="space-y-2">
-            {['En proyecto', 'En Construcción', 'Completado', 'Concurso'].map(status => (
-              <label key={status} className="flex items-center gap-3 cursor-pointer group">
-                <input
-                  checked={statusFilters.includes(status)}
-                  onChange={() => toggleStatus(status)}
-                  className="size-5 rounded border-[#dbe0e6] dark:border-[#374151] text-primary focus:ring-primary/20 bg-white dark:bg-background-dark"
-                  type="checkbox"
-                />
-                <span className="text-sm text-[#617589] dark:text-[#9ca3af] group-hover:text-[#111418] dark:group-hover:text-white">{status}</span>
-              </label>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="w-full h-12 rounded-lg border border-[#dbe0e6] dark:border-[#374151] bg-white dark:bg-background-dark text-[#111418] dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer"
+          >
+            <option value="">Todos los estados</option>
+            {statusOptions.map(option => (
+              <option key={option} value={option}>{option}</option>
             ))}
-          </div>
+          </select>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-[#111418] dark:text-white block">Tipo de promoción</label>
+          <select
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value)}
+            className="w-full h-12 rounded-lg border border-[#dbe0e6] dark:border-[#374151] bg-white dark:bg-background-dark text-[#111418] dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer"
+          >
+            <option value="">Todos los tipos</option>
+            {typeOptions.map(option => (
+              <option key={option} value={option}>{option}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-[#111418] dark:text-white block">Regímenes</label>
+          <select
+            value={regimeFilter}
+            onChange={(e) => setRegimeFilter(e.target.value)}
+            className="w-full h-12 rounded-lg border border-[#dbe0e6] dark:border-[#374151] bg-white dark:bg-background-dark text-[#111418] dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer"
+          >
+            <option value="">Todos los regímenes</option>
+            {regimeOptions.map(option => (
+              <option key={option} value={option}>{option}</option>
+            ))}
+          </select>
         </div>
 
         <hr className="border-[#f0f2f4] dark:border-[#2a3b4d]" />

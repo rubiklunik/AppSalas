@@ -33,6 +33,12 @@ export interface Project {
   typology?: string;
   subtypology?: string;
   roofType?: string;
+  floorsAboveGround?: string;
+  surfaceAboveGround?: string;
+  floorsBelowGround?: string;
+  surfaceBelowGround?: string;
+  totalFloors?: string;
+  notes?: string;
   coordinates?: {
     lat: number;
     lng: number;
