@@ -5,6 +5,7 @@ import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import ProjectCard from '../components/ProjectCard';
 import { fetchAllProjects } from '../services/dataService';
+import ChatWidget from '../components/ChatWidget';
 
 const ListView: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -174,6 +175,7 @@ const ListView: React.FC = () => {
           </div>
         </main>
       </div>
+      <ChatWidget />
     </div>
   );
 };
