@@ -4,95 +4,25 @@ import { Project } from '../types';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import ProjectCard from '../components/ProjectCard';
-import { fetchAllProjects } from '../services/dataService';
 import ChatWidget from '../components/ChatWidget';
+import { useProjects } from '../hooks/useProjects';
 
 const ListView: React.FC = () => {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [locationTerm, setLocationTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [typeFilter, setTypeFilter] = useState('');
-  const [regimeFilter, setRegimeFilter] = useState('');
-  const [floorsFilter, setFloorsFilter] = useState('');
-  const [sizeFilter, setSizeFilter] = useState('');
-  const [sortBy, setSortBy] = useState('recent');
+  const {
+    filteredProjects,
+    isLoading,
+    sortBy, setSortBy,
+    options
+  } = useProjects();
+
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-
-  useEffect(() => {
-    const loadData = async () => {
-      setIsLoading(true);
-      const data = await fetchAllProjects();
-      setProjects(data);
-      setIsLoading(false);
-    };
-    loadData();
-  }, []);
-
-  const statusOptions = Array.from(new Set(projects.map(p => p.status))).filter(Boolean).sort();
-  const typeOptions = Array.from(new Set(projects.map(p => p.businessType))).filter(Boolean).sort();
-  const regimeOptions = Array.from(new Set(projects.map(p => p.regime))).filter(Boolean).sort();
-  const floorOptions = Array.from(new Set(projects.map(p => p.floors))).filter((f): f is string => typeof f === 'string' && f !== '' && f !== '-').sort((a, b) => {
-    // Intentar ordenar numéricamente si es posible
-    const numA = parseInt(a);
-    const numB = parseInt(b);
-    if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
-    return a.localeCompare(b);
-  });
-
-  const sizeOptions = Array.from(new Set(projects.map(p => p.size))).filter((s): s is string => typeof s === 'string' && s !== '' && s !== '-').sort();
-
-  const filteredProjects = projects.filter(p => {
-    // Aseguramos que 'ref' (Cod) se compare como texto para la búsqueda
-    const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      String(p.ref).toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesLocation = p.location.toLowerCase().includes(locationTerm.toLowerCase());
-    const matchesStatus = statusFilter === '' || p.status === statusFilter;
-    const matchesType = typeFilter === '' || p.businessType === typeFilter;
-    const matchesRegime = regimeFilter === '' || p.regime === regimeFilter;
-    const matchesFloors = floorsFilter === '' || p.floors === floorsFilter;
-    const matchesSize = sizeFilter === '' || p.size === sizeFilter;
-    return matchesSearch && matchesLocation && matchesStatus && matchesType && matchesRegime && matchesFloors && matchesSize;
-  }).sort((a, b) => {
-    if (sortBy === 'name') {
-      return a.name.localeCompare(b.name);
-    }
-    if (sortBy === 'units') {
-      const unitsA = parseInt(a.units) || 0;
-      const unitsB = parseInt(b.units) || 0;
-      return unitsA - unitsB;
-    }
-    // Default: Más recientes (por Cod descendente)
-    return parseInt(b.ref) - parseInt(a.ref);
-  });
 
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
 
       <div className="flex-1 flex flex-col md:flex-row max-w-[1440px] mx-auto w-full">
-        <Sidebar
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          locationTerm={locationTerm}
-          setLocationTerm={setLocationTerm}
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
-          statusOptions={statusOptions}
-          typeFilter={typeFilter}
-          setTypeFilter={setTypeFilter}
-          typeOptions={typeOptions}
-          regimeFilter={regimeFilter}
-          setRegimeFilter={setRegimeFilter}
-          regimeOptions={regimeOptions}
-          floorsFilter={floorsFilter}
-          setFloorsFilter={setFloorsFilter}
-          floorOptions={floorOptions}
-          sizeFilter={sizeFilter}
-          setSizeFilter={setSizeFilter}
-          sizeOptions={sizeOptions}
-        />
+        <Sidebar />
 
         <main className="flex-1 min-w-0">
           <div className="sticky top-16 z-30 bg-white dark:bg-[#0d1117] border-b border-[#f0f2f4] dark:border-[#2a3b4d] px-6 md:px-8 lg:px-10 py-6">

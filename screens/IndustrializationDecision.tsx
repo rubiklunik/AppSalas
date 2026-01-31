@@ -1,6 +1,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import Header from '../components/Header';
 // @ts-ignore
 import html2pdf from 'html2pdf.js';
 
@@ -458,17 +459,7 @@ const IndustrializationDecision: React.FC = () => {
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-[#0d1117] flex flex-col font-sans">
             {/* Nav */}
-            <header className="px-6 py-4 flex items-center justify-between border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-black/20 backdrop-blur-md sticky top-0 z-50">
-                <Link to="/" className="flex items-center gap-2 group">
-                    <div className="size-8 bg-primary rounded flex items-center justify-center text-white group-hover:rotate-[-10deg] transition-transform">
-                        <span className="material-symbols-outlined text-xl">home</span>
-                    </div>
-                    <span className="text-xl font-black tracking-tighter text-[#111418] dark:text-white uppercase italic">CRITERIOS</span>
-                </Link>
-                <div className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                    Herramienta Estratégica
-                </div>
-            </header>
+            <Header />
 
             <main className="flex-1 flex flex-col items-center p-6 max-w-4xl mx-auto w-full">
 

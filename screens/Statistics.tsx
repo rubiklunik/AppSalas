@@ -1,29 +1,20 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchAllProjects } from '../services/dataService';
+import Header from '../components/Header';
+import Sidebar from '../components/Sidebar';
+import { useProjects } from '../hooks/useProjects';
 import { Project } from '../types';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, LabelList } from 'recharts';
 import html2pdf from 'html2pdf.js';
 
 const Statistics: React.FC = () => {
-    const [projects, setProjects] = useState<Project[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { filteredProjects: projects, isLoading: loading } = useProjects();
     const [isExporting, setIsExporting] = useState(false);
 
     // States for toggling chart visibility
-    const [showGeneral, setShowGeneral] = useState(false);
-    const [showTypology, setShowTypology] = useState(false);
-    const [showDimensional, setShowDimensional] = useState(false);
-
-    useEffect(() => {
-        const loadData = async () => {
-            const data = await fetchAllProjects();
-            setProjects(data);
-            setLoading(false);
-        };
-        loadData();
-    }, []);
+    const [showGeneral, setShowGeneral] = useState(true); // Default to true now that it's integrated
+    const [showTypology, setShowTypology] = useState(true);
+    const [showDimensional, setShowDimensional] = useState(true);
 
     // Helper function to group data for charts with percentage
     const groupData = (key: keyof Project) => {
@@ -64,7 +55,9 @@ const Statistics: React.FC = () => {
             return `${c.label} ${top.name} ${c.suffix} (${top.percentage}%)`;
         });
 
-        return `La promoción promedio en la producción de Salas está ${results[0]}, ${results[1]}, ${results[2]}, ${results[3]}, ${results[4]}, ${results[5]}, ${results[6]}, ${results[7]} y ${results[8]}.`;
+        if (projects.length === 0) return "No hay datos disponibles con los filtros actuales.";
+
+        return `La promoción promedio según los filtros seleccionados está ${results[0]}, ${results[1]}, ${results[2]}, ${results[3]}, ${results[4]}, ${results[5]}, ${results[6]}, ${results[7]} y ${results[8]}.`;
     };
 
     const exportToPDF = async () => {
@@ -106,22 +99,22 @@ const Statistics: React.FC = () => {
         let sectionsHTML = '';
         sections.forEach(s => {
             sectionsHTML += `
-                <div style="margin-bottom: 30px; page-break-inside: avoid;">
-                    <h2 style="font-size: 16px; font-weight: 900; color: #A61933; border-bottom: 2px solid #f3f4f6; padding-bottom: 8px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">${s.title}</h2>
+                <div style="margin-bottom: 25px; page-break-inside: avoid;">
+                    <h2 style="font-size: 16px; font-weight: 900; color: #A61933; border-bottom: 2px solid #f3f4f6; padding-bottom: 6px; margin-bottom: 12px; text-transform: uppercase;">${s.title}</h2>
                     <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
                         ${s.charts.map(c => {
                 const data = groupData(c.key as keyof Project);
                 return `
                                 <div style="background: #f8fafc; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0;">
-                                    <h3 style="font-size: 9px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 10px; text-align: center;">${c.label}</h3>
+                                    <h3 style="font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 10px; text-align: center;">${c.label}</h3>
                                     <table style="width: 100%; border-collapse: collapse;">
                                         ${data.map((d, i) => `
                                             <tr>
-                                                <td style="font-size: 8px; color: #1e293b; padding: 3px 0; font-weight: 600;">${d.name}</td>
-                                                <td style="font-size: 8px; color: #A61933; text-align: right; font-weight: 900;">${d.value} (${d.percentage}%)</td>
+                                                <td style="font-size: 9px; color: #1e293b; padding: 2px 0; font-weight: 600;">${d.name}</td>
+                                                <td style="font-size: 9px; color: #A61933; text-align: right; font-weight: 900;">${d.value} (${d.percentage}%)</td>
                                             </tr>
                                             <tr>
-                                                <td colspan="2" style="padding-bottom: 6px;">
+                                                <td colspan="2" style="padding-bottom: 5px;">
                                                     <div style="width: 100%; height: 4px; background: #e2e8f0; border-radius: 2px; overflow: hidden;">
                                                         <div style="width: ${d.percentage}%; height: 100%; background: ${COLORS[i % COLORS.length]};"></div>
                                                     </div>
@@ -138,31 +131,31 @@ const Statistics: React.FC = () => {
         });
 
         element.innerHTML = `
-            <div style="font-family: 'Inter', sans-serif; padding: 40px; color: #111418; background: white; width: 850px; min-height: 1100px; box-sizing: border-box;">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #A61933; padding-bottom: 20px; margin-bottom: 30px;">
+            <div style="font-family: 'Inter', sans-serif; padding: 40px 50px; color: #111418; background: white; width: 790px; min-height: 1100px; box-sizing: border-box; display: flex; flex-direction: column;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #A61933; padding-bottom: 18px; margin-bottom: 25px;">
                     <div>
-                        <h1 style="font-size: 28px; font-weight: 900; color: #A61933; margin: 0; letter-spacing: -1px;">DASHBOARD ESTADÍSTICO</h1>
-                        <p style="font-size: 14px; color: #64748b; font-weight: 600; margin-top: 5px;">Análisis de Cartera Inmobiliaria - SALAS</p>
+                        <h1 style="font-size: 26px; font-weight: 900; color: #A61933; margin: 0; letter-spacing: -1px;">DASHBOARD ESTADÍSTICO</h1>
+                        <p style="font-size: 13px; color: #64748b; font-weight: 600; margin-top: 4px;">Análisis de Cartera Inmobiliaria - SALAS</p>
                     </div>
                     <div style="text-align: right;">
                         <p style="font-size: 12px; font-weight: 800; color: #111418; margin: 0;">Fecha del Informe</p>
-                        <p style="font-size: 14px; font-weight: 600; color: #64748b; margin: 0;">${now.toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+                        <p style="font-size: 13px; font-weight: 600; color: #64748b; margin: 0;">${now.toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
                     </div>
                 </div>
 
                 ${sectionsHTML}
 
-                <div style="margin-top: 40px; background: #A61933; padding: 30px; border-radius: 20px; color: white; page-break-inside: avoid;">
-                    <h2 style="font-size: 18px; font-weight: 900; text-transform: uppercase; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                <div style="margin-top: 20px; background: #A61933; padding: 25px; border-radius: 18px; color: white; page-break-inside: avoid;">
+                    <h2 style="font-size: 16px; font-weight: 900; text-transform: uppercase; margin-bottom: 12px; display: flex; align-items: center; gap: 10px;">
                         RESUMEN AUTOMÁTICO DEL INFORME
                     </h2>
-                    <p style="font-size: 16px; line-height: 1.6; font-weight: 500; font-style: italic; opacity: 0.95;">
+                    <p style="font-size: 14px; line-height: 1.5; font-weight: 500; font-style: italic; opacity: 0.95; margin: 0;">
                         “${generateSummary()}”
                     </p>
                 </div>
 
-                <div style="margin-top: auto; padding-top: 50px; border-top: 1px solid #f1f5f9; text-align: center;">
-                    <p style="font-size: 10px; color: #94a3b8; font-weight: 700; letter-spacing: 1px;">SALAS - GESTIÓN DE PROMOCIONES INMOBILIARIAS © ${now.getFullYear()}</p>
+                <div style="margin-top: auto; padding-top: 30px; text-align: center;">
+                    <p style="font-size: 10px; color: #94a3b8; font-weight: 700; letter-spacing: 1px; margin: 0;">SALAS - GESTIÓN DE PROMOCIONES INMOBILIARIAS © ${now.getFullYear()}</p>
                 </div>
             </div>
         `;
@@ -210,8 +203,8 @@ const Statistics: React.FC = () => {
                         onClick={onShow}
                         className="px-8 py-3 bg-[#A61933] text-white font-bold rounded-xl shadow-lg shadow-[#A61933]/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 w-fit whitespace-nowrap"
                     >
-                        <span className="material-symbols-outlined">{show ? 'refresh' : 'analytics'}</span>
-                        {show ? 'Regenerar Gráficos' : 'Generar Gráficos'}
+                        <span className="material-symbols-outlined">{show ? 'visibility_off' : 'visibility'}</span>
+                        {show ? 'Ocultar Gráficos' : 'Mostrar Gráficos'}
                     </button>
                 </div>
 
@@ -290,115 +283,108 @@ const Statistics: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#f8fafc] dark:bg-[#0d1117] flex flex-col">
-            {/* Header */}
-            <header className="px-6 py-4 flex items-center justify-between border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-black/20 backdrop-blur-md sticky top-0 z-50">
-                <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                    <div className="size-8 bg-[#A61933] rounded flex items-center justify-center text-white">
-                        <span className="material-symbols-outlined text-xl">corporate_fare</span>
-                    </div>
-                    <span className="text-xl font-black tracking-tighter text-[#111418] dark:text-white uppercase">SALAS</span>
-                </Link>
-                <Link
-                    to="/"
-                    className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-[#A61933] transition-colors"
-                >
-                    <span className="material-symbols-outlined text-lg">arrow_back</span>
-                    Volver al Inicio
-                </Link>
-            </header>
+        <div className="flex flex-col min-h-screen">
+            <Header />
 
-            <main className="flex-1 max-w-7xl mx-auto w-full p-6 md:p-12">
-                <header className="mb-12">
-                    <h1 className="text-4xl md:text-5xl font-black text-[#111418] dark:text-white tracking-tighter mb-4">
-                        Dashboard de <span className="text-[#A61933]">Estadísticas</span>
-                    </h1>
-                    <p className="text-gray-500 dark:text-gray-400 text-lg max-w-2xl leading-relaxed font-medium">
-                        Analiza la distribución de activos y tipologías de la cartera de SALAS mediante visualizaciones dinámicas integradas.
-                    </p>
-                </header>
+            <div className="flex-1 flex flex-col md:flex-row max-w-[1440px] mx-auto w-full">
+                <Sidebar />
 
-                {/* Section 1: Datos Generales */}
-                {renderChartGroup(
-                    "1. Datos Generales",
-                    "Distribución por ubicación, tipo de negocio y régimen de explotación.",
-                    showGeneral,
-                    () => setShowGeneral(!showGeneral),
-                    [
-                        { key: 'community', label: 'Por Ubicación (CCAA)' },
-                        { key: 'businessType', label: 'Tipo de Promoción' },
-                        { key: 'regime', label: 'Régimen de Venta' }
-                    ]
-                )}
+                <main className="flex-1 min-w-0 bg-[#f8fafc] dark:bg-[#0d1117] p-6 md:p-10">
+                    <header className="mb-12">
+                        <div className="flex items-center gap-4 mb-2">
+                            <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full uppercase tracking-wider">
+                                {projects.length} promociones filtradas
+                            </span>
+                        </div>
+                        <h1 className="text-4xl md:text-5xl font-black text-[#111418] dark:text-white tracking-tighter mb-4">
+                            Dashboard de <span className="text-[#A61933]">Estadísticas</span>
+                        </h1>
+                        <p className="text-gray-500 dark:text-gray-400 text-lg max-w-2xl leading-relaxed font-medium">
+                            Analiza la distribución de activos y tipologías de la selección actual.
+                        </p>
+                    </header>
 
-                {/* Section 2: Datos de Tipología */}
-                {renderChartGroup(
-                    "2. Datos de Tipología",
-                    "Análisis detallado de tipologías estructurales, subtipologías y tipos de cubierta.",
-                    showTypology,
-                    () => setShowTypology(!showTypology),
-                    [
-                        { key: 'typology', label: 'Por Tipología' },
-                        { key: 'subtypology', label: 'Por Subtipología' },
-                        { key: 'roofType', label: 'Tipo de Cubierta' }
-                    ]
-                )}
+                    {/* Section 1: Datos Generales */}
+                    {renderChartGroup(
+                        "1. Datos Generales",
+                        "Distribución por ubicación, tipo de negocio y régimen de explotación.",
+                        showGeneral,
+                        () => setShowGeneral(!showGeneral),
+                        [
+                            { key: 'community', label: 'Por Ubicación (CCAA)' },
+                            { key: 'businessType', label: 'Tipo de Promoción' },
+                            { key: 'regime', label: 'Régimen de Venta' }
+                        ]
+                    )}
 
-                {/* Section 3: Datos Dimensionales */}
-                {renderChartGroup(
-                    "3. Datos Dimensionales",
-                    "Estadísticas sobre volumetría: número de viviendas, alturas totales y plantas bajo rasante.",
-                    showDimensional,
-                    () => setShowDimensional(!showDimensional),
-                    [
-                        { key: 'size', label: 'Nº Viviendas (Rango)' },
-                        { key: 'totalFloors', label: 'Nº de Alturas Total' },
-                        { key: 'floorsBelowGround', label: 'Plantas Sótano' }
-                    ]
-                )}
+                    {/* Section 2: Datos de Tipología */}
+                    {renderChartGroup(
+                        "2. Datos de Tipología",
+                        "Análisis detallado de tipologías estructurales, subtipologías y tipos de cubierta.",
+                        showTypology,
+                        () => setShowTypology(!showTypology),
+                        [
+                            { key: 'typology', label: 'Por Tipología' },
+                            { key: 'subtypology', label: 'Por Subtipología' },
+                            { key: 'roofType', label: 'Tipo de Cubierta' }
+                        ]
+                    )}
 
-                {/* Summary Section - Only visible when all are active */}
-                {showGeneral && showTypology && showDimensional && (
-                    <div className="mt-16 bg-[#A61933] rounded-[40px] p-12 text-white shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-1000">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32"></div>
-                        <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/5 rounded-full -ml-24 -mb-24"></div>
+                    {/* Section 3: Datos Dimensionales */}
+                    {renderChartGroup(
+                        "3. Datos Dimensionales",
+                        "Estadísticas sobre volumetría: número de viviendas, alturas totales y plantas bajo rasante.",
+                        showDimensional,
+                        () => setShowDimensional(!showDimensional),
+                        [
+                            { key: 'size', label: 'Nº Viviendas (Rango)' },
+                            { key: 'totalFloors', label: 'Nº de Alturas Total' },
+                            { key: 'floorsBelowGround', label: 'Plantas Sótano' }
+                        ]
+                    )}
 
-                        <div className="relative z-10">
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-10">
-                                <div className="flex items-center gap-4">
-                                    <div className="size-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center">
-                                        <span className="material-symbols-outlined text-white text-4xl">auto_awesome</span>
+                    {/* Summary Section - Only visible when all are active */}
+                    {showGeneral && showTypology && showDimensional && (
+                        <div className="mt-16 bg-[#A61933] rounded-[40px] p-12 text-white shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-1000">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32"></div>
+                            <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/5 rounded-full -ml-24 -mb-24"></div>
+
+                            <div className="relative z-10">
+                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-10">
+                                    <div className="flex items-center gap-4">
+                                        <div className="size-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center">
+                                            <span className="material-symbols-outlined text-white text-4xl">auto_awesome</span>
+                                        </div>
+                                        <h2 className="text-3xl md:text-4xl font-black tracking-tighter uppercase whitespace-nowrap">Resumen Automático</h2>
                                     </div>
-                                    <h2 className="text-3xl md:text-4xl font-black tracking-tighter uppercase whitespace-nowrap">Resumen Automático</h2>
+
+                                    <button
+                                        onClick={exportToPDF}
+                                        disabled={isExporting}
+                                        className="px-8 py-4 bg-white text-[#A61933] font-black rounded-2xl shadow-2xl hover:bg-gray-100 active:scale-95 transition-all flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed group"
+                                    >
+                                        {isExporting ? (
+                                            <div className="size-5 border-2 border-[#A61933] border-t-transparent rounded-full animate-spin"></div>
+                                        ) : (
+                                            <span className="material-symbols-outlined text-2xl group-hover:bounce">download</span>
+                                        )}
+                                        {isExporting ? 'Generando PDF...' : 'Exportar Informe PDF'}
+                                    </button>
                                 </div>
 
-                                <button
-                                    onClick={exportToPDF}
-                                    disabled={isExporting}
-                                    className="px-8 py-4 bg-white text-[#A61933] font-black rounded-2xl shadow-2xl hover:bg-gray-100 active:scale-95 transition-all flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed group"
-                                >
-                                    {isExporting ? (
-                                        <div className="size-5 border-2 border-[#A61933] border-t-transparent rounded-full animate-spin"></div>
-                                    ) : (
-                                        <span className="material-symbols-outlined text-2xl group-hover:bounce">download</span>
-                                    )}
-                                    {isExporting ? 'Generando PDF...' : 'Exportar Informe PDF'}
-                                </button>
-                            </div>
+                                <p className="text-xl md:text-3xl font-medium leading-relaxed italic opacity-95 first-letter:text-6xl first-letter:font-black first-letter:mr-4 first-letter:float-left first-letter:leading-none">
+                                    “{generateSummary()}”
+                                </p>
 
-                            <p className="text-xl md:text-3xl font-medium leading-relaxed italic opacity-95 first-letter:text-6xl first-letter:font-black first-letter:mr-4 first-letter:float-left first-letter:leading-none">
-                                “{generateSummary()}”
-                            </p>
-
-                            <div className="mt-10 flex items-center gap-2 text-white/60 text-sm font-bold uppercase tracking-[0.2em]">
-                                <span className="material-symbols-outlined text-base">info</span>
-                                Análisis inteligente basado en el 100% de la base de datos actual
+                                <div className="mt-10 flex items-center gap-2 text-white/60 text-sm font-bold uppercase tracking-[0.2em]">
+                                    <span className="material-symbols-outlined text-base">info</span>
+                                    Análisis inteligente basado en la selección actual
+                                </div>
                             </div>
                         </div>
-                    </div>
-                )}
-            </main>
-
+                    )}
+                </main>
+            </div>
             <footer className="p-8 text-center text-gray-400 text-sm border-t border-gray-100 dark:border-gray-800">
                 © {new Date().getFullYear()} SALAS. Análisis de datos en tiempo real.
             </footer>

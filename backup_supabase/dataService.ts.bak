@@ -1,6 +1,13 @@
 
-import { supabase } from './supabaseClient';
+import { createClient } from '@supabase/supabase-js';
 import { Project } from '../types';
+
+// Configuración del cliente de Supabase
+const supabaseUrl = 'https://zwwqlugkuctsqfigimog.supabase.co';
+// IMPORTANTE: Reemplaza esta clave con tu clave anónima (anon key) de Supabase.
+// Es seguro exponerla en el frontend. La puedes encontrar en la configuración de API de tu proyecto Supabase.
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3d3FsdWdrdWN0c3FmaWdpbW9nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzU5MDgsImV4cCI6MjA4MTkxMTkwOH0.CruBIZRK0b82uznRMo49qj3KwRt643gkihNJMO-5Ymo';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Helper para mapear el estado del proyecto a su color correspondiente en la UI
 const getStatusColor = (status: Project['status']): string => {

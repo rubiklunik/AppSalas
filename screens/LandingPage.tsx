@@ -1,22 +1,13 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
+import Header from '../components/Header';
 
 const LandingPage: React.FC = () => {
     return (
         <div className="min-h-screen bg-white dark:bg-[#0d1117] flex flex-col">
             {/* Header Corporativo Simple */}
-            <header className="px-6 py-4 flex items-center justify-between border-b border-gray-100 dark:border-gray-800 bg-white/80 dark:bg-black/20 backdrop-blur-md sticky top-0 z-50">
-                <div className="flex items-center gap-2">
-                    <div className="size-8 bg-primary rounded flex items-center justify-center text-white">
-                        <span className="material-symbols-outlined text-xl">corporate_fare</span>
-                    </div>
-                    <span className="text-xl font-black tracking-tighter text-[#111418] dark:text-white uppercase">SALAS</span>
-                </div>
-                <div className="flex items-center gap-4">
-                    <span className="text-xs font-bold text-gray-400 uppercase tracking-widest hidden sm:block">Plataforma Corporativa</span>
-                </div>
-            </header>
+            <Header />
 
             <main className="flex-1 flex flex-col items-center justify-center p-6 text-center max-w-6xl mx-auto w-full">
                 {/* Hero Section */}

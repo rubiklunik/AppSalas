@@ -1,42 +1,20 @@
 
 import React from 'react';
+import MultiSelectDropdown from './MultiSelectDropdown';
+import { useProjects } from '../hooks/useProjects';
 
-interface SidebarProps {
-  searchTerm: string;
-  setSearchTerm: (val: string) => void;
-  locationTerm: string;
-  setLocationTerm: (val: string) => void;
-  statusFilter: string;
-  setStatusFilter: (val: string) => void;
-  statusOptions: string[];
-  typeFilter: string;
-  setTypeFilter: (val: string) => void;
-  typeOptions: string[];
-  regimeFilter: string;
-  setRegimeFilter: (val: string) => void;
-  regimeOptions: string[];
-  floorsFilter: string;
-  setFloorsFilter: (val: string) => void;
-  floorOptions: string[];
-  sizeFilter: string;
-  setSizeFilter: (val: string) => void;
-  sizeOptions: string[];
-}
-
-const Sidebar: React.FC<SidebarProps> = ({
-  searchTerm, setSearchTerm,
-  locationTerm, setLocationTerm,
-  statusFilter, setStatusFilter,
-  statusOptions,
-  typeFilter, setTypeFilter,
-  typeOptions,
-  regimeFilter, setRegimeFilter,
-  regimeOptions,
-  floorsFilter, setFloorsFilter,
-  floorOptions,
-  sizeFilter, setSizeFilter,
-  sizeOptions
-}) => {
+const Sidebar: React.FC = () => {
+  const {
+    searchTerm, setSearchTerm,
+    locationTerm, setLocationTerm,
+    statusFilter, setStatusFilter,
+    typeFilter, setTypeFilter,
+    regimeFilter, setRegimeFilter,
+    floorsFilter, setFloorsFilter,
+    sizeFilter, setSizeFilter,
+    options,
+    clearFilters
+  } = useProjects();
 
   return (
     <aside className="w-full md:w-80 lg:w-96 shrink-0 bg-white dark:bg-[#1a2632] border-r border-[#f0f2f4] dark:border-[#2a3b4d] md:h-[calc(100vh-64px)] md:sticky md:top-16 overflow-y-auto custom-scrollbar z-40">
@@ -47,15 +25,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             Filtros
           </h3>
           <button
-            onClick={() => {
-              setSearchTerm('');
-              setLocationTerm('');
-              setStatusFilter('');
-              setTypeFilter('');
-              setRegimeFilter('');
-              setFloorsFilter('');
-              setSizeFilter('');
-            }}
+            onClick={clearFilters}
             className="text-sm text-[#617589] dark:text-[#9ca3af] hover:text-primary underline"
           >
             Limpiar todo
@@ -92,77 +62,47 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         <hr className="border-[#f0f2f4] dark:border-[#2a3b4d]" />
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-[#111418] dark:text-white block">Estado del proyecto</label>
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full h-12 rounded-lg border border-[#dbe0e6] dark:border-[#374151] bg-white dark:bg-background-dark text-[#111418] dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer"
-          >
-            <option value="">Todos los estados</option>
-            {statusOptions.map(option => (
-              <option key={option} value={option}>{option}</option>
-            ))}
-          </select>
-        </div>
+        <MultiSelectDropdown
+          label="Estado del proyecto"
+          options={options.status}
+          selectedValues={statusFilter}
+          onChange={setStatusFilter}
+          placeholder="Todos los estados"
+        />
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-[#111418] dark:text-white block">Tipo de promoción</label>
-          <select
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-            className="w-full h-12 rounded-lg border border-[#dbe0e6] dark:border-[#374151] bg-white dark:bg-background-dark text-[#111418] dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer"
-          >
-            <option value="">Todos los tipos</option>
-            {typeOptions.map(option => (
-              <option key={option} value={option}>{option}</option>
-            ))}
-          </select>
-        </div>
+        <MultiSelectDropdown
+          label="Tipo de promoción"
+          options={options.type}
+          selectedValues={typeFilter}
+          onChange={setTypeFilter}
+          placeholder="Todos los tipos"
+        />
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-[#111418] dark:text-white block">Regímenes</label>
-          <select
-            value={regimeFilter}
-            onChange={(e) => setRegimeFilter(e.target.value)}
-            className="w-full h-12 rounded-lg border border-[#dbe0e6] dark:border-[#374151] bg-white dark:bg-background-dark text-[#111418] dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer"
-          >
-            <option value="">Todos los regímenes</option>
-            {regimeOptions.map(option => (
-              <option key={option} value={option}>{option}</option>
-            ))}
-          </select>
-        </div>
+        <MultiSelectDropdown
+          label="Regímenes"
+          options={options.regime}
+          selectedValues={regimeFilter}
+          onChange={setRegimeFilter}
+          placeholder="Todos los regímenes"
+        />
 
         <hr className="border-[#f0f2f4] dark:border-[#2a3b4d]" />
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-[#111418] dark:text-white">Número de plantas</label>
-          <select
-            value={floorsFilter}
-            onChange={(e) => setFloorsFilter(e.target.value)}
-            className="w-full h-12 rounded-lg border border-[#dbe0e6] dark:border-[#374151] bg-white dark:bg-background-dark text-[#111418] dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-          >
-            <option value="">Todas las plantas</option>
-            {floorOptions.map(option => (
-              <option key={option} value={option}>{option}</option>
-            ))}
-          </select>
-        </div>
+        <MultiSelectDropdown
+          label="Número de plantas"
+          options={options.floors}
+          selectedValues={floorsFilter}
+          onChange={setFloorsFilter}
+          placeholder="Todas las plantas"
+        />
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-[#111418] dark:text-white">Rango / Tamaño</label>
-          <select
-            value={sizeFilter}
-            onChange={(e) => setSizeFilter(e.target.value)}
-            className="w-full h-12 rounded-lg border border-[#dbe0e6] dark:border-[#374151] bg-white dark:bg-background-dark text-[#111418] dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-          >
-            <option value="">Cualquier tamaño</option>
-            {sizeOptions.map(option => (
-              <option key={option} value={option}>{option}</option>
-            ))}
-          </select>
-        </div>
+        <MultiSelectDropdown
+          label="Rango / Tamaño"
+          options={options.size}
+          selectedValues={sizeFilter}
+          onChange={setSizeFilter}
+          placeholder="Cualquier tamaño"
+        />
 
       </div>
     </aside>
