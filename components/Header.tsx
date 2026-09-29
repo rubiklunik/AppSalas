@@ -25,7 +25,7 @@ const Header: React.FC = () => {
           <div className="size-10 bg-[#A61933] rounded-lg flex items-center justify-center text-white">
             <span className="material-symbols-outlined text-2xl">apartment</span>
           </div>
-          <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] hidden sm:block text-[#111418] dark:text-white">Gestión de Promociones</h2>
+          <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] hidden sm:block text-[#111418] dark:text-white">Gestión de Promociones_LC</h2>
         </Link>
         <div className="flex items-center gap-6">
           {isPromotionFlow && (

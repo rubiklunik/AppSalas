@@ -27,6 +27,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const initialized = useRef(false);
 
     const fetchProfile = async (userId: string) => {
+        console.log('AuthContext: Iniciando fetchProfile para:', userId);
         try {
             const { data, error } = await supabase
                 .from('profiles')
@@ -35,14 +36,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 .single();
 
             if (error) {
-                console.warn('AuthContext: Error cargando perfil:', error.message);
+                console.warn('AuthContext: Error cargando perfil:', error.message, error);
                 setProfile(null);
             } else {
+                console.log('AuthContext: Perfil cargado con éxito:', data?.role);
                 setProfile(data);
             }
         } catch (err) {
-            console.error('AuthContext: Error fetchProfile:', err);
+            console.error('AuthContext: Error fetchProfile (exception):', err);
         } finally {
+            console.log('AuthContext: Finalizando carga (loading = false)');
             setLoading(false);
         }
     };

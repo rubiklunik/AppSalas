@@ -57,13 +57,16 @@ export const ProjectsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const [sortBy, setSortBy] = useState('recent');
 
     const loadData = async () => {
+        console.log('ProjectsContext: Iniciando carga de proyectos...');
         setIsLoading(true);
         try {
             const data = await fetchAllProjects();
+            console.log('ProjectsContext: Proyectos cargados:', data.length);
             setProjects(data);
         } catch (error) {
-            console.error('Error fetching projects:', error);
+            console.error('ProjectsContext: Error fetching projects:', error);
         } finally {
+            console.log('ProjectsContext: Finalizando carga de proyectos (isLoading = false)');
             setIsLoading(false);
         }
     };

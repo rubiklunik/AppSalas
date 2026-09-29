@@ -215,7 +215,7 @@ const Statistics: React.FC = () => {
                             return (
                                 <div key={item.key} className="bg-gray-50 dark:bg-[#0d1117]/50 rounded-2xl p-6 border border-gray-100 dark:border-gray-800 transition-all hover:border-[#A61933]/20">
                                     <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6 text-center">{item.label}</h3>
-                                    <div className="h-64 w-full">
+                                    <div className="h-64 min-h-[256px] w-full min-w-0">
                                         <ResponsiveContainer width="100%" height="100%">
                                             <BarChart data={data}>
                                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />

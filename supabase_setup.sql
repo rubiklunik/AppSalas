@@ -1,6 +1,6 @@
 -- 1. Create the profiles table if it doesn't exist
 CREATE TABLE IF NOT EXISTS public.profiles (
-  id UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL PRIMARY KEY,
+  id UUID NOT NULL PRIMARY KEY,
   username TEXT,
   role TEXT DEFAULT 'user' CHECK (role IN ('admin', 'user')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
@@ -60,7 +60,58 @@ BEGIN
 END $$;
 */
 
--- 5. Policies for the existing 'projects' table
+-- 5. Create the projects table if it doesn't exist
+CREATE TABLE IF NOT EXISTS public.projects (
+  "Cod" TEXT PRIMARY KEY,
+  "Promoción" TEXT,
+  "Municipio" TEXT,
+  "Estado2" TEXT,
+  "Nº Plantas SR" TEXT,
+  "Nº VIV./Nº HAB." TEXT,
+  "Sup Const. SR" TEXT,
+  "Rango" TEXT,
+  "CCAA" TEXT,
+  "Província" TEXT,
+  "TIPO de Negocio" TEXT,
+  "Régimen" TEXT,
+  "Link IMG" TEXT,
+  "LINK MIN" TEXT,
+  "LINK PDF" TEXT,
+  "Dirección" TEXT,
+  "Referencia Catastral" TEXT,
+  "Promotora" TEXT,
+  "Arquitecto" TEXT,
+  "Constructora" TEXT,
+  "Presupuesto" TEXT,
+  "Coste m2" TEXT,
+  "Ventas" TEXT,
+  "Descripción" TEXT,
+  "Tipología" TEXT,
+  "Subtipología" TEXT,
+  "Tipo CUB." TEXT,
+  "Estado" TEXT,
+  "NOMBRE IMG" TEXT,
+  "IMAGEN" TEXT,
+  "NOMBRE PDF" TEXT,
+  "PDF" TEXT,
+  "Calificación" TEXT,
+  "Producto" TEXT,
+  "Tipo" TEXT,
+  "Subtipo" TEXT,
+  "Tipo Cub" TEXT,
+  "Nº Pl. BR" TEXT,
+  "Sup Const. BR" TEXT,
+  "Nº TOT Pl" TEXT,
+  "Notas" TEXT,
+  "Latitud" DOUBLE PRECISION,
+  "Longitud" DOUBLE PRECISION,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 6. Enable Row Level Security for projects
+ALTER TABLE public.projects ENABLE ROW LEVEL SECURITY;
+
+-- 7. Policies for the existing 'projects' table
 DO $$ 
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow authenticated read access' AND tablename = 'projects') THEN
